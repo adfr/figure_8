@@ -30,6 +30,27 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation
 from tensorflow.keras.optimizers import SGD
 import pickle
+class StartingVerbExtractor(BaseEstimator, TransformerMixin):
+# from the lesson's notebook
+    def starting_verb(self, text):
+        try:
+            sentence_list = sent_tokenize(text)
+            for sentence in sentence_list:
+                pos_tags = pos_tag(tokenize(sentence))
+                first_word, first_tag = pos_tags[0]
+                if first_tag in ['VB', 'VBP'] or first_word == 'RT':
+                    return True
+        except:
+            return False
+                    
+        return False
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        X_tagged = pd.Series(X).apply(self.starting_verb)
+        return pd.DataFrame(X_tagged)
 
 
 def load_data(database_filepath):
@@ -70,6 +91,29 @@ def build_model():
     }
     cv  = GridSearchCV(pipeline, param_grid=parameters,verbose=3,n_jobs=4,cv=4)
     return cv
+def build_model_verb():
+    pipeline = Pipeline([
+        ('features', FeatureUnion([
+            ('text_pipeline', Pipeline([
+                ('vect', CountVectorizer(tokenizer=tokenize)),
+                ('tfidf', TfidfTransformer())
+            ])),
+
+            ('starting_verb', StartingVerbExtractor())
+        ])),
+
+        ('clf', MultiOutputClassifier(MLPClassifier(solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(6, 3), random_state=1)))
+        ])
+    parameters ={
+        'clf__estimator__hidden_layer_sizes':((32,3) ,(32,4)),
+#        'vect__ngram_range': ((1, 1), (1, 2)),
+#        'vect__max_df': (0.5, 0.75, 1.0),
+#        'vect__max_features': (5000, 10000),
+#        'clf__estimator__alpha' : (0.00001 ,0.0001 , 0.001 )
+
+    }
+    cv  = GridSearchCV(pipeline, param_grid=parameters,verbose=3,n_jobs=4,cv=4)
+    return cv
 
 def display_results(y_test, y_pred):
     for i,j in enumerate(y_test.columns):
@@ -97,7 +141,7 @@ def main():
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
         
         print('Building model...')
-        model = build_model()
+        model = build_model_verb()
         
         print('Training model...')
         model.fit(X_train, Y_train)
