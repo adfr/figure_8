@@ -1,24 +1,90 @@
 import sys
+import pandas as pd
+import numpy as np
+import re
+from sqlalchemy import create_engine
+from sklearn.pipeline import Pipeline
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.linear_model import SGDClassifier
+from sklearn.metrics import classification_report
+from nltk.tokenize import word_tokenize
+from nltk.tokenize import sent_tokenize
+from nltk.stem import WordNetLemmatizer
+from nltk.stem.porter import PorterStemmer
+from nltk import pos_tag
+from sklearn.metrics import confusion_matrix
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import train_test_split,GridSearchCV 
+from sklearn.pipeline import Pipeline, FeatureUnion
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from gensim.sklearn_api import W2VTransformer
+import tensorflow as tf
+import tensorflow.keras
+from gensim.models import Word2Vec
+from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
+import tensorflow.keras
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, Activation
+from tensorflow.keras.optimizers import SGD
+import pickle
 
 
 def load_data(database_filepath):
-    pass
+    engine = create_engine('database_filepath')
+	df = pd.read_sql_table(con = engine , table_name = 'Message_label')
 
 
 def tokenize(text):
-    pass
+    # First remove punctation and lowercase all letters
+    text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
+    
+    # tokenize text
+    clean_tokens = word_tokenize(text)
+    lemmatizer = WordNetLemmatizer()
+    stemmer = PorterStemmer()
+    
+    # lemmatize, stem and remove stop words
+    clean_tokens = [stemmer.stem(lemmatizer.lemmatize(word)) for word in clean_tokens]
+    return clean_tokens
 
 
 def build_model():
-    pass
+    pipeline  = Pipeline(
+            [('vect',CountVectorizer(tokenizer=tokenize)),
+             ('tfidf',TfidfTransformer()),
+             ('clf' , MultiOutputClassifier(MLPClassifier(solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(6, 3), random_state=1)) )  
+            ]
+        )
+    parameters ={
+        'clf__estimator__hidden_layer_sizes':((6,3), (32,3), (32,4), (64,3)),
+        'vect__ngram_range': ((1, 1), (1, 2)),
+        'vect__max_df': (0.5, 0.75, 1.0),
+        'vect__max_features': (5000, 10000),
+        'clf__estimator__alpha' : (0.00001 ,0.0001 , 0.001 )
 
+    }
+    cv  = GridSearchCV(pipeline, param_grid=parameters,verbose=3,n_jobs=3,cv=2)
+    return cv
 
+def display_results(y_test, y_pred):
+    for i,j in enumerate(y_test.columns):
+        print(j)
+        confusion_mat = confusion_matrix(y_test[j], y_pred[:,i])
+        accuracy = (y_pred[:,i] == y_test[j]).mean()
+        print(classification_report(y_test[j], y_pred[:,i]))
+        print("Labels:", j)
+        print("Confusion Matrix:\n", confusion_mat)
+        print("Accuracy:", accuracy)
 def evaluate_model(model, X_test, Y_test, category_names):
-    pass
+    y_pred_perceptron2 = model.predict(X_test)
 
 
 def save_model(model, model_filepath):
-    pass
+    filename = 'model_filepath'
+	pickle.dump(model, open(filename, 'wb'))
 
 
 def main():
