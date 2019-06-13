@@ -33,14 +33,16 @@ import pickle
 
 
 def load_data(database_filepath):
-    engine = create_engine('database_filepath')
+	engine = create_engine('sqlite:///'+database_filepath)
 	df = pd.read_sql_table(con = engine , table_name = 'Message_label')
-
+	X = df.message 
+	Y = df.drop(['id', 'message','original','genre'], axis=1)
+	category_names= Y.columns
+	return X,Y,category_names
 
 def tokenize(text):
     # First remove punctation and lowercase all letters
     text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
-    
     # tokenize text
     clean_tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
@@ -59,14 +61,14 @@ def build_model():
             ]
         )
     parameters ={
-        'clf__estimator__hidden_layer_sizes':((6,3), (32,3), (32,4), (64,3)),
-        'vect__ngram_range': ((1, 1), (1, 2)),
-        'vect__max_df': (0.5, 0.75, 1.0),
-        'vect__max_features': (5000, 10000),
-        'clf__estimator__alpha' : (0.00001 ,0.0001 , 0.001 )
+        'clf__estimator__hidden_layer_sizes':((32,3), (32,4)),
+        #'vect__ngram_range': ((1, 1), (1, 2)),
+        #'vect__max_df': (0.5, 0.75, 1.0),
+        #'vect__max_features': (5000, 10000),
+        #'clf__estimator__alpha' : (0.00001 ,0.0001 , 0.001 )
 
     }
-    cv  = GridSearchCV(pipeline, param_grid=parameters,verbose=3,n_jobs=3,cv=2)
+    cv  = GridSearchCV(pipeline, param_grid=parameters,verbose=3,n_jobs=4,cv=4)
     return cv
 
 def display_results(y_test, y_pred):
@@ -83,7 +85,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
-    filename = 'model_filepath'
+	filename = model_filepath
 	pickle.dump(model, open(filename, 'wb'))
 
 

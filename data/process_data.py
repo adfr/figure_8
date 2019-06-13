@@ -23,9 +23,10 @@ def clean_data(df):
   df=df.drop(labels = 'categories' , axis =1)
   df = df.drop_duplicates(subset=['id'], keep='first', inplace=False)
   df = df.drop_duplicates(subset=['message'], keep='first', inplace=False)
+  return df
 
 def save_data(df, database_filename):
-  engine = create_engine('database_filename')
+  engine = create_engine('sqlite:///'+database_filename)
   df.to_sql('Message_label', engine, index=False)  
 
 
