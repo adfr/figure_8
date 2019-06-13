@@ -10,9 +10,61 @@ from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
 from sklearn.externals import joblib
 from sqlalchemy import create_engine
-
+import sys
+import pandas as pd
+import numpy as np
+import re
+from sqlalchemy import create_engine
+from sklearn.pipeline import Pipeline
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.linear_model import SGDClassifier
+from sklearn.metrics import classification_report
+from nltk.tokenize import word_tokenize
+from nltk.tokenize import sent_tokenize
+from nltk.stem import WordNetLemmatizer
+from nltk.stem.porter import PorterStemmer
+from nltk import pos_tag
+from sklearn.metrics import confusion_matrix
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import train_test_split,GridSearchCV 
+from sklearn.pipeline import Pipeline, FeatureUnion
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from gensim.sklearn_api import W2VTransformer
+import tensorflow as tf
+import tensorflow.keras
+from gensim.models import Word2Vec
+from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
+import tensorflow.keras
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, Activation
+from tensorflow.keras.optimizers import SGD
+import pickle
 
 app = Flask(__name__)
+class StartingVerbExtractor(BaseEstimator, TransformerMixin):
+# from the lesson's notebook
+    def starting_verb(self, text):
+        try:
+            sentence_list = sent_tokenize(text)
+            for sentence in sentence_list:
+                pos_tags = pos_tag(tokenize(sentence))
+                first_word, first_tag = pos_tags[0]
+                if first_tag in ['VB', 'VBP'] or first_word == 'RT':
+                    return True
+        except:
+            return False
+                    
+        return False
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        X_tagged = pd.Series(X).apply(self.starting_verb)
+        return pd.DataFrame(X_tagged)
 
 def tokenize(text):
     tokens = word_tokenize(text)
@@ -26,11 +78,11 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///../data/YourDatabaseName.db')
-df = pd.read_sql_table('YourTableName', engine)
+engine = create_engine('sqlite:///data/DisasterResponse.db')
+df = pd.read_sql_table('Message_label', engine)
 
 # load model
-model = joblib.load("../models/your_model_name.pkl")
+model = joblib.load("models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
@@ -82,8 +134,9 @@ def go():
 
     # use model to predict classification for query
     classification_labels = model.predict([query])[0]
+    print(model.predict([query]))
     classification_results = dict(zip(df.columns[4:], classification_labels))
-
+    print(classification_results)
     # This will render the go.html Please see that file. 
     return render_template(
         'go.html',
