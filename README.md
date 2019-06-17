@@ -7,21 +7,22 @@ Provide classification of disaster messages using a multilayer perceptron.
 
 
 ### Folders
+<pre>
 Figure8/
 ├── README.md  
 ├── app/  
- &nbsp; ├──	run.py # Flask file that runs app  
- &nbsp; ├── templates/  
- &nbsp;  &nbsp; ├──	master.html  
- &nbsp;  &nbsp; └── go.html  
+		├──	run.py # Flask file that runs app  
+		├── templates/  
+                ├──	master.html  
+				└── go.html  
 ├── data/  
- &nbsp; ├── categories.csv  
- &nbsp; ├──	messages.csv   
- &nbsp; ├── process_data.py  
- &nbsp; └── DisasterResponse.db    
+		├── categories.csv  
+		├──	messages.csv   
+		├── process_data.py  
+		└── DisasterResponse.db    
 └── models/  
- &nbsp; └── train_classifier.py  
-
+		└── train_classifier.py  
+</pre>
 
 ### Instructions:
 1. Run the following commands in the project's root directory to set up your database and model.
