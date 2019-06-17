@@ -8,8 +8,8 @@ Provide classification of disaster messages using a multilayer perceptron.
 
 ### Folders
 Figure8/
-├── README.md
-├── app/
+├── README.md //
+├── app/ //
     ├──	run.py # Flask file that runs app
     ├── templates/
     |       ├──	master.html 
@@ -40,7 +40,8 @@ Figure8/
 
 2 Algorithms were tested out:
 - Multilayer perceptron
-- Random forest
+- Random forest 
+
 Both can be used to for multiouput classifcation
 Accurracy reached 93.81%.
 The features used were TF-IDF and verb extractors.
