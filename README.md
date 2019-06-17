@@ -8,19 +8,19 @@ Provide classification of disaster messages using a multilayer perceptron.
 
 ### Folders
 Figure8/
-├── README.md //
-├── app/ //
-    ├──	run.py # Flask file that runs app
-    ├── templates/
-    |       ├──	master.html 
-    |       └── go.html 
-├── data/
+├── README.md  
+├── app/  
+    ├──	run.py # Flask file that runs app  
+    ├── templates/  
+        ├──	master.html  
+        └── go.html  
+├── data/  
     ├── categories.csv  
-    ├──	messages.csv  
-    ├── process_data.py
-    └── DisasterResponse.db   database to save clean data to
-└── models/
-    └── train_classifier.py
+    ├──	messages.csv   
+    ├── process_data.py  
+    └── DisasterResponse.db    
+└── models/  
+    └── train_classifier.py  
 
 
 ### Instructions:
@@ -41,8 +41,7 @@ Figure8/
 2 Algorithms were tested out:
 - Multilayer perceptron
 - Random forest 
-
-Both can be used to for multiouput classifcation
-Accurracy reached 93.81%.
-The features used were TF-IDF and verb extractors.
+	Both can be used to for multiouput classifcation
+	Accurracy reached 93.81%.
+	The features used were TF-IDF and verb extractors.
 
