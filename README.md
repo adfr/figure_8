@@ -13,7 +13,7 @@ Figure8/
 ├── app/  
 	├──	run.py # Flask file that runs app  
 	├── templates/  
-        ├──	master.html  
+		├──	master.html  
 		└── go.html  
 ├── data/  
 	├── categories.csv  
