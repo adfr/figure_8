@@ -10,17 +10,17 @@ Provide classification of disaster messages using a multilayer perceptron.
 Figure8/
 ├── README.md  
 ├── app/  
-    ├──	run.py # Flask file that runs app  
-    ├── templates/  
-        ├──	master.html  
-        └── go.html  
+ &nbsp; ├──	run.py # Flask file that runs app  
+ &nbsp; ├── templates/  
+ &nbsp;  &nbsp; ├──	master.html  
+ &nbsp;  &nbsp; └── go.html  
 ├── data/  
-    ├── categories.csv  
-    ├──	messages.csv   
-    ├── process_data.py  
-    └── DisasterResponse.db    
+ &nbsp; ├── categories.csv  
+ &nbsp; ├──	messages.csv   
+ &nbsp; ├── process_data.py  
+ &nbsp; └── DisasterResponse.db    
 └── models/  
-    └── train_classifier.py  
+ &nbsp; └── train_classifier.py  
 
 
 ### Instructions:
