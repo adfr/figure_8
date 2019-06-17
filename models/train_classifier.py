@@ -1,3 +1,4 @@
+# import all librairies
 import sys
 import pandas as pd
 import numpy as np
@@ -30,8 +31,11 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation
 from tensorflow.keras.optimizers import SGD
 import pickle
+
+
 class StartingVerbExtractor(BaseEstimator, TransformerMixin):
-# from the lesson's notebook
+# from the lesson's notebook, extract the first verb,
+#this class can be used in the pipeline
     def starting_verb(self, text):
         try:
             sentence_list = sent_tokenize(text)
@@ -54,6 +58,17 @@ class StartingVerbExtractor(BaseEstimator, TransformerMixin):
 
 
 def load_data(database_filepath):
+    '''
+    Load the data from a database
+    Input:
+      -Path to the database: str
+    output:
+      - X a dataframe with the dependent variables
+      - Y a dataframe with the response
+      -  category_names an array with the response names
+
+
+    '''
 	engine = create_engine('sqlite:///'+database_filepath)
 	df = pd.read_sql_table(con = engine , table_name = 'Message_label')
 	X = df.message 
@@ -68,7 +83,6 @@ def tokenize(text):
     clean_tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
     stemmer = PorterStemmer()
-    
     # lemmatize, stem and remove stop words
     clean_tokens = [stemmer.stem(lemmatizer.lemmatize(word)) for word in clean_tokens]
     return clean_tokens

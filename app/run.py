@@ -93,8 +93,13 @@ def index():
     # extract data needed for visuals
     # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
-    genre_names = list(genre_counts.index)
-    
+    genre_names = list(genre_counts.index)       
+    categories = df.drop(['original', 'genre','message','id'], axis =1)
+    categories_counts = categories.sum().sort_values(ascending=False)
+    categories_names = list(categories_counts.index)
+    good_needed=df.loc[ df.request ==1,['medical_products', 'water' , 'food', 'clothing']] 
+    good_needed= good_needed.sum().sort_values(ascending=False)
+    good_names= list(good_needed.index)
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
     graphs = [
@@ -113,10 +118,47 @@ def index():
                 },
                 'xaxis': {
                     'title': "Genre"
+                },
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=categories_names,
+                    y=categories_counts
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Categories',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Categories"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=good_names,
+                    y=good_needed
+                )
+            ],
+
+            'layout': {
+                'title': 'Goods needed',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Categories"
                 }
             }
         }
-    ]
+        ]
+
     
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]

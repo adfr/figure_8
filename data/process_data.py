@@ -3,12 +3,27 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 def load_data(messages_filepath, categories_filepath):
+      '''
+    Load the data from CVS files
+    Input:
+      -Path to the csv file of messages
+      -Path to the csv file of categories
+    output:
+      - a merged data frame
+    '''
   messages = pd.read_csv(messages_filepath)
   categories = pd.read_csv(categories_filepath)
   return  messages.merge(categories, how='inner' , left_on='id' , right_on='id')
 
 
 def clean_data(df):
+   '''
+    Clean the data
+    Input:
+      -Dataframe
+    output:
+      - cleaned data frame: split the category per column, remove duplicates, 
+    '''
   categories = df.categories.str.split(pat=';', n=-1, expand=True)
   row = categories.loc[0,:]
   category_colnames = row.apply( lambda col : col[0:len(col)-2])
